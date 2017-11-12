@@ -2,6 +2,8 @@ defmodule Facebook do
   use Application
   use Supervisor
 
+  require Logger
+
   @moduledoc """
   Provides API wrappers for the Facebook Graph API
 
@@ -116,6 +118,23 @@ defmodule Facebook do
   """
   def set_appsecret(appsecret) do
     Config.appsecret(appsecret)
+  end
+
+  @doc """
+  Fetch user friends (that are using the app)
+
+  See: https://developers.facebook.com/docs/graph-api/reference/user/friends/
+  """
+  @spec me_friends(access_token) :: resp
+  def me_friends(access_token) do
+    params =
+      []
+      |> add_app_secret(access_token)
+      |> add_access_token(access_token)
+
+    ~s(/me/friends)
+    |> GraphAPI.get([], params: params)
+    |> ResponseFormatter.format_response()
   end
 
   @doc """
